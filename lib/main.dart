@@ -45,9 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
     "assets/img/mad.png"
   ];
 
-  List<String> status = ["좋음", "보통", "나쁨", "매우나쁨"];
+  List<String> status = [
+    "산뜻한 공기를 마음껏 마셔보세요.",
+    "가벼운 산보 정도는 괜찮겠어요~",
+    "외출을 자제해주세요!",
+    "지금 나가면 암 걸립니다..."
+  ];
 
-  String stationName = "강서구";
+  String stationName = "송도";
 
   List<Dust> data = [];
 
@@ -74,9 +79,17 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: getPage(),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {},
+        onPressed: () async {
+          String loc = await Navigator.of(context)
+              .push(MaterialPageRoute(builder: (ctx) => const LocationPage()));
+
+          if (loc != null) {
+            stationName = loc;
+            getDustData();
+          }
+        },
         tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.location_on),
       ),
     );
   }
@@ -93,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Container(
-            height: 60,
+            height: 40,
           ),
           const Text(
             "현재 위치",
@@ -126,7 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
           Text(
             status[status_],
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+                fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
           ),
           Container(
             height: 12,
@@ -136,6 +150,57 @@ class _MyHomePageState extends State<MyHomePage> {
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 14, color: Colors.white),
           ),
+          Expanded(
+            child: SizedBox(
+              height: 200,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: List.generate(data.length, (idx) {
+                  Dust dust = data[idx];
+                  int status_ = getStatus(dust);
+
+                  return Container(
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 14),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          dust.datatime.replaceAll(" ", "\n"),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                        Container(
+                          height: 12,
+                        ),
+                        SizedBox(
+                          height: 45,
+                          width: 45,
+                          child: Image.asset(
+                            icons[status_],
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        Container(
+                          height: 12,
+                        ),
+                        Text(
+                          "${dust.pm10}㎍/㎥",
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ),
+          Container(
+            height: 70,
+          )
         ],
       ),
     );
@@ -146,5 +211,42 @@ class _MyHomePageState extends State<MyHomePage> {
     data = await api.getDustDate(stationName);
     data.removeWhere((t) => t.pm10 == 0);
     setState(() {});
+  }
+}
+
+class LocationPage extends StatefulWidget {
+  const LocationPage({Key key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _LocationPageState();
+  }
+}
+
+class _LocationPageState extends State<LocationPage> {
+  List<String> locations = [
+    "송도",
+    "강남구",
+    "강동구",
+    "강북구",
+    "강서구",
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: ListView(
+        children: List.generate(locations.length, (idx) {
+          return ListTile(
+            title: Text(locations[idx]),
+            trailing: const Icon(Icons.arrow_forward),
+            onTap: () {
+              Navigator.of(context).pop(locations[idx]);
+            },
+          );
+        }),
+      ),
+    );
   }
 }
