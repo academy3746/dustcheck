@@ -5,9 +5,11 @@ class Dust {
   int khai; // 통합대기환경 지수
   String datatime; // 날짜
   double co; // 일산화탄소 지수 (additional)
-  double o3; // 오존 지수 (additional)
+  double o3;
 
-  Dust({this.pm10, this.pm25, this.khai, this.datatime});
+  Dust({this.pm10, this.pm25, this.khai, this.datatime}); // 오존 지수 (additional)
+
+
 
   factory Dust.fromJson(Map<String, dynamic> data) {
     return Dust(
