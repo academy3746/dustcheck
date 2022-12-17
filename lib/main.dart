@@ -1,10 +1,17 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:dustcheck/data/api.dart';
 import 'package:dustcheck/data/dust.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:in_app_review/in_app_review.dart';
 
 void main() {
   runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize without device test ids.
+  Admob.initialize();
+  // Or add a list of test ids.
+  // Admob.initialize(testDeviceIds: ['YOUR DEVICE ID']);
 }
 
 class MyApp extends StatelessWidget {
@@ -87,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
             stationName = loc;
             getDustData();
           }
+          InAppReview.instance.requestReview();
         },
         tooltip: 'Increment',
         child: const Icon(Icons.location_on),
@@ -198,9 +206,12 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ),
+          AdmobBanner(
+              adUnitId: AdmobBanner.testAdUnitId,
+              adSize: AdmobBannerSize.BANNER),
           Container(
-            height: 70,
-          )
+            height: 30,
+          ),
         ],
       ),
     );
@@ -230,6 +241,26 @@ class _LocationPageState extends State<LocationPage> {
     "강동구",
     "강북구",
     "강서구",
+    "관악구",
+    "광진구",
+    "구로구",
+    "금천구",
+    "노원구",
+    "도봉구",
+    "동대문구",
+    "동작구",
+    "마포구",
+    "서대문구",
+    "서초구",
+    "성동구",
+    "성북구",
+    "송파구",
+    "양천구",
+    "영등포구",
+    "용산구",
+    "은평구",
+    "중구",
+    "중랑구",
   ];
 
   @override
